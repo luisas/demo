@@ -52,6 +52,9 @@ workflow NFCORE_DEMO {
     )
     emit:
     multiqc_report = DEMO.out.multiqc_report // channel: /path/to/multiqc_report.html
+    fastqc_html    = DEMO.out.fastqc_html    // channel: [ meta, path(*.html) ]
+    fastqc_zip     = DEMO.out.fastqc_zip     // channel: [ meta, path(*.zip) ]
+    trimmed_reads  = DEMO.out.trimmed_reads  // channel: [ meta, path(*.fastq.gz) ] or empty
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,6 +96,28 @@ workflow {
         params.hook_url,
         NFCORE_DEMO.out.multiqc_report
     )
+
+    publish:
+    multiqc_report = NFCORE_DEMO.out.multiqc_report
+    fastqc_html    = NFCORE_DEMO.out.fastqc_html
+    fastqc_zip     = NFCORE_DEMO.out.fastqc_zip
+    trimmed_reads  = NFCORE_DEMO.out.trimmed_reads
+}
+
+output {
+    multiqc_report {
+        path 'multiqc'
+    }
+    fastqc_html {
+        path 'fastqc'
+    }
+    fastqc_zip {
+        path 'fastqc'
+        label 'fastqc'
+    }
+    trimmed_reads {
+        path 'trimmed'
+    }
 }
 
 /*

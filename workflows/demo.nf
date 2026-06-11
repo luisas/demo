@@ -36,10 +36,12 @@ workflow DEMO {
     //
     // MODULE: Run SEQTK_TRIM
     //
+    ch_trimmed_reads = channel.empty()
     if (!params.skip_trim) {
         SEQTK_TRIM (
             ch_samplesheet
         )
+        ch_trimmed_reads = SEQTK_TRIM.out.reads
     }
 
     //
@@ -112,7 +114,11 @@ workflow DEMO {
         []
     )
 
-    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    emit:
+    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    fastqc_html    = FASTQC.out.html             // channel: [ meta, path(*.html) ]
+    fastqc_zip     = FASTQC.out.zip              // channel: [ meta, path(*.zip) ]
+    trimmed_reads  = ch_trimmed_reads            // channel: [ meta, path(*.fastq.gz) ] or empty
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 }
